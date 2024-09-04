@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: laizc
@@ -41,7 +42,7 @@ public class UserService {
         user.setAge(23);
         user.setSubmitTime(new Date());
         userDao.updateByPrimaryKeySelective(user);
-        System.out.println(user);
+        System.out.println("update time: " + System.currentTimeMillis() + ": " + user);
     }
 
     /**
@@ -63,9 +64,22 @@ public class UserService {
      * @param id
      */
     @Transactional
-    public void selectById(Long  id) {
+    public void selectById(Long id) {
         User user = userDao.selectByPrimary(id);
         System.out.println(user);
     }
 
+    public void updateAgeBatch(List<Long> idList, int age) {
+        System.out.println("updateAgeBatch start: " + System.currentTimeMillis());
+        userDao.updateAgeBatch(idList, age);
+        System.out.println("updateAgeBatch end: " + System.currentTimeMillis());
+    }
+
+    @Transactional
+    public void updateIdBetween(Long minId, Long maxId) throws InterruptedException {
+        System.out.println("updateIdBetween time: " + System.currentTimeMillis());
+        userDao.updateIdBetween(minId, maxId);
+        System.out.println("updateIdBetween time: " + System.currentTimeMillis());
+        Thread.currentThread().join();
+    }
 }

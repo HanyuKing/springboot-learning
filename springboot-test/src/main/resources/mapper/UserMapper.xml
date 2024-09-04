@@ -8,7 +8,8 @@
         <result column="submit_time" property="submitTime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id,name,age,submit_time
+        id
+        ,name,age,submit_time
     </sql>
     <select id="selectByPrimary" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
@@ -17,38 +18,48 @@
         where id = #{id,jdbcType=BIGINT}
     </select>
     <insert id="insert" parameterType="com.test.model.User" useGeneratedKeys="true" keyProperty="id">
-        insert into t_user (id,name,age,submit_time)
-        values (#{id,jdbcType=BIGINT},#{name,jdbcType=VARCHAR},#{age,jdbcType=INTEGER},#{submitTime,jdbcType=TIMESTAMP})
+        insert into t_user (id, name, age, submit_time)
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER},
+                #{submitTime,jdbcType=TIMESTAMP})
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.test.model.User" useGeneratedKeys="true" keyProperty="id">
+    <update id="updateByPrimaryKeySelective" parameterType="com.test.model.User" useGeneratedKeys="true"
+            keyProperty="id">
         update t_user
-        <set >
-            <if test="name != null" >
+        <set>
+            <if test="name != null">
                 name = #{name,jdbcType=VARCHAR},
             </if>
-            <if test="age != null" >
+            <if test="age != null">
                 age = #{age,jdbcType=INTEGER},
             </if>
-            <if test="submitTime != null" >
+            <if test="submitTime != null">
                 submit_time = #{submitTime,jdbcType=TIMESTAMP},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByNameSelective"  parameterType="com.test.model.User" >
+    <update id="updateByNameSelective" parameterType="com.test.model.User">
         update t_user
-        <set >
-            <if test="age != null" >
+        <set>
+            <if test="age != null">
                 age = #{age,jdbcType=INTEGER},
             </if>
-            <if test="submitTime != null" >
+            <if test="submitTime != null">
                 submit_time = #{submitTime,jdbcType=TIMESTAMP},
             </if>
         </set>
         where name = #{name,jdbcType=VARCHAR}
     </update>
+
+    <update id="updateAgeBatch">
+        update t_user set age = #{age} where id in
+        <foreach collection="idList" item="userId" separator="," open="(" close=")">
+           #{userId}
+        </foreach>
+    </update>
+
 
     <update id="updateByPrimaryKey" parameterType="com.test.model.User" >
         update t_user
@@ -58,4 +69,9 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
+    <update id="updateIdBetween">
+        update t_user
+        set age = age + 1
+        where id between #{min} and #{max}
+    </update>
 </mapper>

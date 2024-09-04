@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.concurrent.locks.LockSupport;
-
 /**
  * @author: laizc
  * @date: created in 2022/1/13
@@ -24,6 +22,12 @@ public class MainService {
 
     @Autowired
     private ChildService childService;
+
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void updateA(Long mainId, long sleep) throws Exception {
+        aService.A_Update(mainId);
+        Thread.sleep(sleep);
+    }
 
     /**
      * main、child都为REQUIRD时，child有异常，main提交不了事务，抛出异常
@@ -45,7 +49,7 @@ public class MainService {
     }
 
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public void updateTest(Long mainId, Long childId) throws Exception {
+    public void updateTransactionThenSleep(Long mainId, Long childId) throws Exception {
         aService.A_Update(mainId);
         childService.childTestUpdate(childId);
 
